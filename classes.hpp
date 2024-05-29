@@ -7,7 +7,7 @@
 class MovableSprite : public sf::Sprite
 {
 public:
-    void movePlayer(sf::RenderWindow& window){};
+    void moveObject(sf::RenderWindow& window){};
     void update(float deltaTime){};
     void draw(sf::RenderWindow& window){};
     void shoot(sf::RenderWindow& window, sf::Texture bullet_texture){};
@@ -22,7 +22,7 @@ public:
         setPosition(position);
     }
 
-    void movePlayer(sf::RenderWindow& window)
+    void moveObject(sf::RenderWindow& window)
     {
         velocity.x = 0;
         velocity.y = 0;
@@ -101,9 +101,9 @@ private:
 
 };
 
-////////////////////
-/////Enemy class////
-////////////////////
+/////////////////////
+/////Enemy class/////
+/////////////////////
 
 class Enemy : public MovableSprite
 {
@@ -114,7 +114,7 @@ public:
        setPosition(position);
     }
 
-    void movePlayer(sf::RenderWindow& window)
+    void moveObject(sf::RenderWindow& window)
     {
         velocity.x = 0;
         velocity.y = 0;
@@ -189,4 +189,39 @@ private:
     std::vector<sf::Sprite> enemy_bullets;
     sf::Clock bullet_clock;
     sf::Time bullet_cooldown;
+};
+////////////////////////
+/////Asteroid class/////
+////////////////////////
+
+class Asteroid : public MovableSprite
+{
+public:
+    Asteroid(sf::Vector2f position, sf::Vector2f size)
+    {
+        setScale(size);
+        setPosition(position);
+    }
+
+    void moveObject(sf::RenderWindow& window)
+    {
+        velocity.x = -speed;
+    }
+    
+    void draw(sf::RenderWindow& window)
+    {
+        window.draw(*this); 
+    }
+
+    void update(float deltaTime)
+    {
+        move(velocity.x * deltaTime, velocity.y * deltaTime);
+    }
+
+int hitPoints = 100;
+~Asteroid() = default;
+
+private:
+    sf::Vector2f velocity;
+    float speed = 400.0f;
 };
