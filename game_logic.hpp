@@ -3,75 +3,53 @@
 #include <SFML/System.hpp>
 #include <iostream>
 #include <vector>
-#include "classes.hpp"
-#include <cmath>
 #include <cstdlib> // for rand()
 #include <ctime> // for time()
 
+#include "classes.hpp"
+#include "textures.hpp"
+
 void game_logic()
 {
+    // Initialize random seed
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+
     sf::RenderWindow window(sf::VideoMode(), "Screen", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
-    
+
     sf::Clock delta_clock;
-    sf::Clock bullet_clock;
-    sf::Time bullet_cooldown;
-    sf::Texture backgroundTexture1;
-    sf::Texture backgroundTexture2;
+    sf::Clock asteroid_clock; // Clock for spawning new asteroids
 
     float scrollSpeed = 200.f;
-    
-
-
-
-    if(!backgroundTexture1.loadFromFile("background1.png"))
-    {
-        std::cout << "Error loading background texture" << std::endl;
-    }
-    
-    if(!backgroundTexture2.loadFromFile("background2.png"))
-    {
-        std::cout << "Error loading background texture" << std::endl;
-    }
-    
-    
-    
-    sf::Sprite background1;
-    background1.setTexture(backgroundTexture1);
-    background1.setScale(2, 2);
-    
-    sf::Sprite background2;
-    background2.setTexture(backgroundTexture2);
-    background2.setScale(2, 2);
 
     Player player(sf::Vector2f(0, 0), sf::Vector2f(5, 5));
     //Enemy enemy(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
-    Asteroid asteroid(sf::Vector2f(window.getSize().x + 10, rand() % window.getSize().y), sf::Vector2f(1, 1));
-    
-    sf::Texture player_texture;
-    if(!player_texture.loadFromFile("player.png"))
+    std::vector<Asteroid> asteroids;
+    load_textures();
+
+    sf::Texture backgroundTexture1;
+
+    if (!backgroundTexture1.loadFromFile("background1.png"))
     {
-        std::cout << "Error loading player texture" << std::endl;
-        
+        std::cout << "Error loading background texture" << std::endl;
     }
+
+    sf::Sprite background1;
+    background1.setTexture(backgroundTexture1);
+    background1.setScale(2, 2);
+
     player.setTexture(player_texture);
-    
-    sf::Texture enemy_texture;
-    if(!enemy_texture.loadFromFile("enemy.png"))
+
+    // Initialize some asteroids at the beginning
+    for (int i = 0; i < 5; i++)
     {
-        std::cout << "Error loading enemy texture" << std::endl;
-        
+        sf::Vector2f position(window.getSize().x + 10, std::rand() % window.getSize().y);
+        sf::Vector2f size(1, 1);
+        Asteroid asteroid(position, size);
+        asteroid.setTexture(asteroid_texture);
+        asteroids.push_back(asteroid);
     }
-    //enemy.setTexture(enemy_texture);
-    
-    sf::Texture asteroid_texture;
-    if(!asteroid_texture.loadFromFile("asteroid.png"))
-    {
-        std::cout << "Error loading asteroid texture" << std::endl;
-        
-    }
-    asteroid.setTexture(asteroid_texture);
-    
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -84,46 +62,86 @@ void game_logic()
         {
             window.close();
         }
-        
-        
+
         float deltaTime = delta_clock.restart().asSeconds();
-        background1.move(-scrollSpeed * deltaTime, 0.f);
-        background2.move(-scrollSpeed * deltaTime, 0.f);
-        
-        if (background1.getPosition().x + backgroundTexture1.getSize().x < 0) {
-            background1.setPosition(background2.getPosition().x + backgroundTexture1.getSize().x, 0.f);
-        }
-        if (background2.getPosition().x + backgroundTexture2.getSize().x < 0) {
-            background2.setPosition(background1.getPosition().x + backgroundTexture2.getSize().x, 0.f);
+
+        // Spawn new asteroids periodically
+        if (asteroid_clock.getElapsedTime().asSeconds() > 1.0f) // spawn every second
+        {
+            sf::Vector2f position(window.getSize().x + 10, std::rand() % window.getSize().y);
+            sf::Vector2f size(1, 1);
+            Asteroid new_asteroid(position, size);
+            new_asteroid.setTexture(asteroid_texture);
+            asteroids.push_back(new_asteroid);
+            asteroid_clock.restart();
         }
 
-        sf::Texture bullet_texture;
-            
-        if(!bullet_texture.loadFromFile("bullet.png"))
+        
+        for(auto it = asteroids.begin(); it != asteroids.end();)
         {
-            std::cout << "Error loading bullet texture" << std::endl;
-        }   
+            it->moveObject(window);
+            it->update(deltaTime);
+            if(it->getPosition().x < -it->getGlobalBounds().width)
+            {
+                it = asteroids.erase(it); 
+            }
+            else
+            {
+                it++;
+            }
+        }
+        
+       
+        for (auto bulletIt = player.bullets.begin(); bulletIt != player.bullets.end();)
+        {
+            bool bulletRemoved = false;
+            for (auto asteroidIt = asteroids.begin(); asteroidIt != asteroids.end();)
+            {
+                if (bulletIt->getGlobalBounds().intersects(asteroidIt->getGlobalBounds()))
+                {
+                    asteroidIt->hitPoints-=20;
+                    bulletIt = player.bullets.erase(bulletIt);
+                    bulletRemoved = true;
+                    if (asteroidIt->hitPoints <= 0)
+                    {
+                        asteroidIt = asteroids.erase(asteroidIt);
+                    }
+                    else
+                    {
+                        asteroidIt++;
+                    }
+                    break;
+                }
+                else
+                {
+                    asteroidIt++;
+                }
+            }
+            if (!bulletRemoved)
+            {
+                bulletIt++;
+            }
+        }
+        
         
         window.clear();
-        window.draw(background1);
-        window.draw(background2);
 
+        window.draw(background1);
         player.draw(window);
         //enemy.draw(window);
-        asteroid.draw(window);
+
+        for (auto &asteroid : asteroids)
+        {
+             
+            asteroid.draw(window);
+            
+        }
 
         player.moveObject(window);
         player.shoot(window, bullet_texture);
-        
-        asteroid.moveObject(window);
-        
-        //enemy.movePlayer(window);
-        //enemy.shoot(window, bullet_texture);
-        
+
         player.update(deltaTime);
-        //enemy.update(deltaTime);
-        asteroid.update(deltaTime);       
-        
-        window.display();  
+
+        window.display();
     }
 }

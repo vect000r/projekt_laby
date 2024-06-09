@@ -16,17 +16,26 @@ public:
 class Player : public MovableSprite
 {
 public:
+    friend void damage();
+    float bullet_position_x;
+    float bullet_position_y;
+    std::vector<sf::Sprite> bullets;
+
     Player(sf::Vector2f position, sf::Vector2f size)
     {
         setScale(size);
         setPosition(position);
     }
 
+    bool is_moving = false;
+    bool is_alive = true;
+    
     void moveObject(sf::RenderWindow& window)
     {
         velocity.x = 0;
         velocity.y = 0;
         
+        is_moving = true;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
             velocity.x = -speed;
@@ -72,6 +81,8 @@ public:
             bullets.back().setScale(4, 4);
             bullets.back().setOrigin(5, 5);
             bullets.back().setPosition(getPosition()+sf::Vector2f(0, 30));
+            bullet_position_x = bullets.back().getPosition().x;
+            bullet_position_y = bullets.back().getPosition().y;
         }
 
         for (int i = 0; i < bullets.size(); i++)
@@ -79,6 +90,9 @@ public:
             bullets[i].move(20, 0);
             window.draw(bullets[i]);
         }
+    
+    
+    
     }
     
     
@@ -95,10 +109,9 @@ public:
 private:
     sf::Vector2f velocity;
     float speed = 400.0f;
-    std::vector<sf::Sprite> bullets;
+    //std::vector<sf::Sprite> bullets;
     sf::Clock bullet_clock;
     sf::Time bullet_cooldown;
-
 };
 
 /////////////////////
@@ -225,3 +238,9 @@ private:
     sf::Vector2f velocity;
     float speed = 400.0f;
 };
+
+
+void damage()
+{
+    
+}
