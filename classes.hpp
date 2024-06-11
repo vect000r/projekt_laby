@@ -16,7 +16,7 @@ public:
 class Player : public MovableSprite
 {
 public:
-    friend void damage();
+    int hitPoints = 100;
     float bullet_position_x;
     float bullet_position_y;
     std::vector<sf::Sprite> bullets;
@@ -210,6 +210,9 @@ private:
 class Asteroid : public MovableSprite
 {
 public:
+    
+    float speed = 200.0f;
+
     Asteroid(sf::Vector2f position, sf::Vector2f size)
     {
         setScale(size);
@@ -236,7 +239,7 @@ int hitPoints = 100;
 
 private:
     sf::Vector2f velocity;
-    float speed = 400.0f;
+    //float speed = 200.0f;
 };
 
 
