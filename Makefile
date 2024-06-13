@@ -1,42 +1,31 @@
-.SUFFIXES: .c .h .x .o
+GCC		  := g++
+FLAGS := -Wall -Wextra -Wno-unused-parameter -std=c++11 -ggdb
 
-CFLAGS = -pedantic -Wall -std=c++11
-LFLAGS = -pedantic -Wall -std=c++11
-CO = g++
-LD = $(CO)
+BIN		:= bin
+SRC		:= source
+INCLUDE	:= includes
+LIB		:= lib
 
-NAME1 = main
+LIBS	:= -lsfml-graphics -lsfml-window -lsfml-system
+EXECUTABLE	:= main
 
-OBJS1 = $(NAME1).o
+MKDIR_P = mkdir -p
 
-EXEC1 = $(NAME1).x
+.PHONY: directories
 
-.PHONY: help
-help:
-	@echo "make all		Kompiluje wszystkie programy"
-	@echo "make run-all	Uruchamia wszystkie programy"
-	@echo "make run-$(NAME1)    Uruchamia program $(NAME1)"
-	@echo "make clean	Usuwa pliki *.o oraz *.x"
-.PHONY: all
-all: $(EXEC1) 
+all: directories $(BIN)/$(EXECUTABLE)
 
-$(EXEC1): $(OBJS1)
-	$(LD) $(LFLAGS) $^ -o $@ -lsfml-graphics -lsfml-window -lsfml-system
+directories: ${BIN}
 
-%.o: %.c %.h
-	$(CO) $(CFLAGS) -c $<
+${BIN}:
+	${MKDIR_P} ${BIN}
 
-.PHONY: run-$(EXEC1) 
-run-$(NAME1): $(EXEC1)
-	./$(EXEC1)
+run: clean all
+	
+	./$(BIN)/$(EXECUTABLE)
 
-.PHONY: clean
+$(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
+	$(GCC) $(FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBS)
 
 clean:
-	rm *.o *.x
-
-.PHONY: run-all
-run-all: $(EXEC1) 
-	./$(EXEC1)
-	
-
+	-rm $(BIN)/*
