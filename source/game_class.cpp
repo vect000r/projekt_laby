@@ -7,6 +7,9 @@
 #include "classes.hpp"
 #include "textures.hpp"
 #include "game_class.hpp"
+#include "menu.hpp"
+
+
 
 Game::Game()
 {
@@ -17,6 +20,8 @@ Game::Game()
     window.create(sf::VideoMode(), "Screen", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
     
+    Menu menu;
+
     if(!backgroundTexture1.loadFromFile("assets/background1.png"))
     {
         std::cout << "Error loading background1 texture" << std::endl;
@@ -48,9 +53,20 @@ void Game::run()
 {
     while (window.isOpen())
     {
+        if (playGame == false)
+        {
+            menu.draw(window);
+            window.display();
+        }
+        
+        window.clear();
         processEvents();
-        update();
-        render();
+        
+        if (playGame)
+        {
+            update();
+            render();
+        }
     }
 }
 
@@ -99,10 +115,37 @@ void Game::processEvents()
     {
         if (event.type == sf::Event::Closed)
             window.close();
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-    {
-        window.close();
+    
+        if (event.type == sf::Event::KeyReleased)
+        {
+            if (event.key.code == sf::Keyboard::Up)
+            {
+                menu.moveUp();
+            } 
+            else if (event.key.code == sf::Keyboard::Down)
+            {
+                menu.moveDown();
+            }
+            else if (event.key.code == sf::Keyboard::Return)
+            {
+                if(menu.getPressed() == 0)
+                {
+                    
+                    playGame = true;
+                    
+                }
+                else if(menu.getPressed() == 1)
+                {
+                    
+                    window.close();
+                }
+            }
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+            window.close();
+        }
     }
 }
 
@@ -205,8 +248,9 @@ void Game::update()
 
 void Game::render()
 {
+    menu.draw(window);
+    
     window.clear();
-       
     window.draw(background1);
     player.draw(window);
     player.shoot(window, bullet_texture); 
@@ -219,7 +263,6 @@ void Game::render()
     hit_points_bar(window, player.hitPoints);
 
     window.display();
-    
 };
 
 void game_logic()

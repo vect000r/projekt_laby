@@ -8,6 +8,7 @@
 #include <vector>
 #include "classes.hpp"
 #include "textures.hpp"
+#include "menu.hpp"
 
 class Game
 {
@@ -22,11 +23,12 @@ private:
     sf::Clock asteroid_clock;
     float scrollSpeed;
     Player player;
+    Menu menu;
     sf::Texture backgroundTexture1;
     sf::Sprite background1;
     std::vector<Asteroid> asteroids;
     int score;
-
+    bool playGame = false;
     void score_display(sf::RenderWindow& window, int score);
     void hit_points_bar(sf::RenderWindow& window, int hitPoints);
     void processEvents();
