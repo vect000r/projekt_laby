@@ -19,6 +19,8 @@ public:
 private:
     sf::RenderWindow window;
     sf::Clock delta_clock;
+    sf::Text game_over;
+    sf::Font font;
     float deltaTime;
     sf::Clock asteroid_clock;
     float scrollSpeed;

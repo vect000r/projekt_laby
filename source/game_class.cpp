@@ -29,6 +29,15 @@ Game::Game()
     background1.setTexture(backgroundTexture1);
     background1.setScale(2, 2);
     
+    sf::Font font;
+    if (!font.loadFromFile("assets/Tiny5-Regular.ttf"))
+    {
+        std::cout << "Error loading font" << std::endl;
+    }
+
+    
+    
+    
     load_textures();
     
     delta_clock.restart();
@@ -53,11 +62,27 @@ void Game::run()
 {
     while (window.isOpen())
     {
-        if (playGame == false)
+        if (playGame == false && player.hitPoints > 0)
         {
             menu.draw(window);
             window.display();
         }
+        
+        if (playGame == false && player.hitPoints <= 0)
+        {
+            window.clear();
+            game_over.setFont(font);
+            game_over.setString("Game Over");
+            game_over.setScale(2, 2);
+            game_over.setFillColor(sf::Color::White);
+            game_over.setPosition(window.getSize().x / 2 - 100, window.getSize().y / 2 - 50);
+            window.draw(game_over);
+            window.display();
+            //window.close();
+        }
+        
+        
+        
         
         window.clear();
         processEvents();
@@ -67,6 +92,8 @@ void Game::run()
             update();
             render();
         }
+    
+        
     }
 }
 
@@ -75,7 +102,7 @@ void Game::run()
 
 void Game::score_display(sf::RenderWindow& window, int score) 
 {
-    sf::Font font;
+    
     if (!font.loadFromFile("assets/Tiny5-Regular.ttf"))
     {
         std::cout << "Error loading font" << std::endl;
@@ -242,7 +269,8 @@ void Game::update()
 
     if (player.hitPoints <= 0)
     {
-        window.close();
+        playGame = false;
+        //window.close();
     }
 }
 

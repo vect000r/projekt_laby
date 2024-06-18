@@ -15,17 +15,17 @@ Menu::Menu()
     title.setFillColor(sf::Color::White);
     title.setScale(2, 2);
     title.setString("Space Race");
-    title.setPosition(sf::Vector2f(width / 2, height / (ITEMS + 1) * 0.5));
+    title.setPosition(sf::Vector2f(10, height / (ITEMS + 1) * 0.5));
     
     menu[0].setFont(font);
     menu[0].setFillColor(sf::Color::Green);
     menu[0].setString("Play");
-    menu[0].setPosition(sf::Vector2f(width / 2, height / (ITEMS + 1) * 1));
+    menu[0].setPosition(sf::Vector2f(10, height / (ITEMS + 1) * 1));
 
     menu[1].setFont(font);
     menu[1].setFillColor(sf::Color::White);
     menu[1].setString("Exit");
-    menu[1].setPosition(sf::Vector2f(width / 2, height / (ITEMS + 1) * 2));
+    menu[1].setPosition(sf::Vector2f(10, height / (ITEMS + 1) * 2));
 
     selected_index = 0;
 }
