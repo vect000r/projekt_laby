@@ -8,7 +8,7 @@
 #include "textures.hpp"
 #include "game_class.hpp"
 #include "menu.hpp"
-
+#include "game_over.hpp"
 
 
 Game::Game()
@@ -20,7 +20,7 @@ Game::Game()
     window.create(sf::VideoMode(), "Screen", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
     
-    Menu menu;
+    
 
     if(!backgroundTexture1.loadFromFile("assets/background1.png"))
     {
@@ -70,15 +70,8 @@ void Game::run()
         
         if (playGame == false && player.hitPoints <= 0)
         {
-            window.clear();
-            game_over.setFont(font);
-            game_over.setString("Game Over");
-            game_over.setScale(2, 2);
-            game_over.setFillColor(sf::Color::White);
-            game_over.setPosition(window.getSize().x / 2 - 100, window.getSize().y / 2 - 50);
-            window.draw(game_over);
+            game_over_menu.draw(window);
             window.display();
-            //window.close();
         }
         
         
@@ -147,23 +140,32 @@ void Game::processEvents()
         {
             if (event.key.code == sf::Keyboard::Up)
             {
-                menu.moveUp();
+                if (playGame == false)
+                    menu.moveUp();
+                
+                if (playGame == false && player.hitPoints <= 0)
+                    game_over_menu.moveUp();
             } 
             else if (event.key.code == sf::Keyboard::Down)
             {
-                menu.moveDown();
+                if (playGame == false)
+                    menu.moveDown();
+                
+                if (playGame == false && player.hitPoints <= 0)
+                    game_over_menu.moveDown();
             }
             else if (event.key.code == sf::Keyboard::Return)
             {
-                if(menu.getPressed() == 0)
+                if(menu.getPressed() == 0 || game_over_menu.getPressed() == 0)
                 {
-                    
                     playGame = true;
-                    
+                    player.hitPoints = 100;
+                    score = 0;
+                    asteroids.clear();
+                    player.setPosition(100, window.getSize().y / 2);
                 }
-                else if(menu.getPressed() == 1)
+                else if(menu.getPressed() == 1 || game_over_menu.getPressed() == 1)
                 {
-                    
                     window.close();
                 }
             }

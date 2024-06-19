@@ -9,6 +9,7 @@
 #include "classes.hpp"
 #include "textures.hpp"
 #include "menu.hpp"
+#include "game_over.hpp"
 
 class Game
 {
@@ -26,6 +27,7 @@ private:
     float scrollSpeed;
     Player player;
     Menu menu;
+    GameOver game_over_menu;
     sf::Texture backgroundTexture1;
     sf::Sprite background1;
     std::vector<Asteroid> asteroids;

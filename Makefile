@@ -1,5 +1,5 @@
 GCC		  := g++
-FLAGS := -Wall -Wextra -Wno-unused-parameter -std=c++11 -ggdb
+FLAGS := -Wall -Wextra -w -Wno-unused-parameter -std=c++11 -ggdb
 
 BIN		:= bin
 SRC		:= source
