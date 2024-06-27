@@ -30,9 +30,7 @@ Menu::Menu()
     selected_index = 0;
 }
 
-Menu::~Menu()
-{
-}
+Menu::~Menu(){}
 
 void Menu::draw(sf::RenderWindow &window)
 {
