@@ -52,4 +52,4 @@ private:
 
 void game_logic();
 
-#endif // GAME_CLASS_H
+#endif 
