@@ -24,4 +24,4 @@ private:
     sf::Text title;
 };
 
-#endif // MENU_H
+#endif 
