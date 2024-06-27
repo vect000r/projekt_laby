@@ -11,9 +11,7 @@ void ParticleLogic::update(float deltaTime)
     {
         particle.update(deltaTime);
     }
-    particles.erase(
-        std::remove_if(particles.begin(), particles.end(), [](const Particle& particle) { return !particle.is_alive; }), particles.end()); // usuwamy wszystkie particle w zakresie particles.begin() do particles.end() które nie są żywe
-}
+    particles.erase(std::remove_if(particles.begin(), particles.end(), [](const Particle& particle) { return !particle.is_alive; }), particles.end()); // we remove every particle from the range that is not alive
 
 void ParticleLogic::draw(sf::RenderWindow& window, sf::Texture texture)
 {
