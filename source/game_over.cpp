@@ -29,9 +29,7 @@ GameOver::GameOver()
     selected_index = 0;
 }
 
-GameOver::~GameOver()
-{
-}
+GameOver::~GameOver(){}
 
 void GameOver::draw(sf::RenderWindow &window)
 {
