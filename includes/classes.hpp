@@ -80,4 +80,4 @@ private:
     float asteroid_speed = 200.0f;
 };
 
-#endif // CLASSES_H
+#endif
