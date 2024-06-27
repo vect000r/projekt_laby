@@ -10,14 +10,12 @@
 Game::Game()
 {
     // Initialize random seed
-    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    std::srand(static_cast<unsigned>(std::time(nullptr))); // time(nullptr) returns the current tune and I cast it to the unsigned type
     score = 0;
 
     window.create(sf::VideoMode(), "Screen", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
     
-    
-
     if(!backgroundTexture1.loadFromFile("assets/background1.png"))
     {
         std::cout << "Error loading background1 texture" << std::endl;
@@ -69,7 +67,6 @@ void Game::run()
         
         if (playGame)
         {
-            
             update();
             render();
         }
@@ -168,12 +165,10 @@ void Game::processEvents()
 template <typename T>
 void Game::spawnObjects(std::vector<T>& objects, sf::RenderWindow& window, sf::Texture& object_texture, sf::Clock& object_clock,float& object_speed ,int& score, float& deltaTime, float& spawn_cooldown)
 {
-    //float deltaTime = delta_clock.restart().asSeconds();
-
     // Spawn new objects periodically
-    if (object_clock.getElapsedTime().asSeconds() > spawn_cooldown) // spawn every two seconds
+    if (object_clock.getElapsedTime().asSeconds() > spawn_cooldown) // spawn everytime the cooldown allows it 
     {
-        score += 5; // every 2 seconds the player gets 5 points
+        score += 5; // for every object spawned the player gets 5 points
         sf::Vector2f position(window.getSize().x + 10, std::rand() % window.getSize().y);
         sf::Vector2f size(1, 1);
         T new_object(position, size);
@@ -371,7 +366,6 @@ void Game::render()
         enemy.draw(window);
         enemy.shoot(window, enemy_bullet_texture);
     }
-    
     
     score_display(window, score);
     hit_points_bar(window, player.hitPoints);
