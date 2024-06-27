@@ -50,6 +50,4 @@ private:
 
 };
 
-void game_logic();
-
 #endif 
