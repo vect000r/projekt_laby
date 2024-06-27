@@ -1,10 +1,10 @@
-GCC	= g++
+GCC = g++
 FLAGS = -Wall -Wextra -w -Wno-unused-parameter -std=c++11 -ggdb
 
-BIN	= bin
-SRC	= source
+BIN = bin
+SRC = source
 INCLUDE	= includes
-LIB	= lib
+LIB = lib
 
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system
 EXEC = main
