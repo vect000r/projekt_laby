@@ -14,7 +14,7 @@ Particle::Particle(sf::Vector2f position, float scale)
 void Particle::update(float deltaTime)
 {
     particle_sprite.move(velocity * deltaTime);
-    lifespan -= deltaTime; // z każdą klatką zmiejszamy lifespan o deltaTime (aby kiedyś umarła)
+    lifespan -= deltaTime; // with every frame we decrease the lifespan of the particle so that 
     if (lifespan <= 0)
     {
         is_alive = false;
