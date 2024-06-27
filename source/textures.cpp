@@ -4,14 +4,6 @@
 #include <iostream>
 #include "textures.hpp"
 
-sf::Texture player_texture;
-sf::Texture enemy_texture;
-sf::Texture asteroid_texture;
-sf::Texture bullet_texture;
-sf::Texture asteroid_particle_texture;
-sf::Texture player_particle_texture;
-sf::Texture enemy_bullet_texture;
-
 void load_textures()
 {
     if(!player_texture.loadFromFile("assets/player.png"))
