@@ -372,9 +372,3 @@ void Game::render()
 
     window.display();
 };
-
-void game_logic()
-{
-    Game game;
-    game.run();
-}
