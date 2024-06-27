@@ -1,10 +1,10 @@
-GCC = g++
+GCC	= g++
 FLAGS = -Wall -Wextra -w -Wno-unused-parameter -std=c++11 -ggdb
 
-BIN		= bin
-SRC		= source
+BIN	= bin
+SRC	= source
 INCLUDE	= includes
-LIB		= lib
+LIB	= lib
 
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system
 EXEC = main
@@ -13,7 +13,7 @@ MKDIR_P = mkdir -p
 
 .PHONY: directories
 
-all: directories $(BIN)/$(EXECUTABLE)
+all: directories $(BIN)/$(EXEC)
 
 directories: ${BIN}
 
@@ -21,9 +21,9 @@ ${BIN}:
 	${MKDIR_P} ${BIN}
 
 run: 
-	./$(BIN)/$(EXECUTABLE)
+	./$(BIN)/$(EXEC)
 
-$(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
+$(BIN)/$(EXEC): $(SRC)/*.cpp
 	$(GCC) $(FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBS)
 
 clean:
