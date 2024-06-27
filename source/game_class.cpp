@@ -1,7 +1,3 @@
-
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
 #include <iostream>
 #include <vector>
 #include "classes.hpp"
@@ -9,7 +5,7 @@
 #include "game_class.hpp"
 #include "menu.hpp"
 #include "game_over.hpp"
-
+#include "particle_logic.hpp"
 
 Game::Game()
 {
@@ -35,16 +31,10 @@ Game::Game()
         std::cout << "Error loading font" << std::endl;
     }
 
-    
-    
-    
     load_textures();
     
     delta_clock.restart();
     asteroid_clock.restart();
-
-    scrollSpeed = 200.f;
-
     player.setTexture(player_texture);
 
     // Initialize some asteroids at the beginning
@@ -74,19 +64,15 @@ void Game::run()
             window.display();
         }
         
-        
-        
-        
         window.clear();
         processEvents();
         
         if (playGame)
         {
+            
             update();
             render();
         }
-    
-        
     }
 }
 
@@ -162,6 +148,7 @@ void Game::processEvents()
                     player.hitPoints = 100;
                     score = 0;
                     asteroids.clear();
+                    enemies.clear();
                     player.setPosition(100, window.getSize().y / 2);
                 }
                 else if(menu.getPressed() == 1 || game_over_menu.getPressed() == 1)
@@ -178,32 +165,32 @@ void Game::processEvents()
     }
 }
 
-void Game::update()
+template <typename T>
+void Game::spawnObjects(std::vector<T>& objects, sf::RenderWindow& window, sf::Texture& object_texture, sf::Clock& object_clock,float& object_speed ,int& score, float& deltaTime, float& spawn_cooldown)
 {
-    float deltaTime = delta_clock.restart().asSeconds();
-    
-    player.moveObject(window);
-    player.update(deltaTime);
-    
-    // Spawn new asteroids periodically
-    if (asteroid_clock.getElapsedTime().asSeconds() > 2.0f) // spawn every second
+    //float deltaTime = delta_clock.restart().asSeconds();
+
+    // Spawn new objects periodically
+    if (object_clock.getElapsedTime().asSeconds() > spawn_cooldown) // spawn every two seconds
     {
+        score += 5; // every 2 seconds the player gets 5 points
         sf::Vector2f position(window.getSize().x + 10, std::rand() % window.getSize().y);
         sf::Vector2f size(1, 1);
-        Asteroid new_asteroid(position, size);
-        new_asteroid.setTexture(asteroid_texture);
-        asteroids.push_back(new_asteroid);
-        asteroid_clock.restart();
+        T new_object(position, size);
+        new_object.setTexture(object_texture);
+        
+        objects.push_back(new_object);
+        object_clock.restart();
     }
 
-    // Move and remove asteroids that are off-screen
-    for (auto it = asteroids.begin(); it != asteroids.end();)
+    // Move and remove objects that are off-screen
+    for (auto it = objects.begin(); it != objects.end();)
     {
         it->moveObject(window);
         it->update(deltaTime);
         if (it->getPosition().x < -it->getGlobalBounds().width)
         {
-            it = asteroids.erase(it);
+            it = objects.erase(it);
         }
         else
         {
@@ -212,10 +199,25 @@ void Game::update()
 
         if (score >= 100)
         {
-            it->asteroid_speed = 400.f;
+            int speedIncrement = score / 50;
+            it->setSpeed(object_speed = 100.0f + (speedIncrement * 100.0f));
         }
     }
+}
 
+
+
+void Game::update()
+{
+    float deltaTime = delta_clock.restart().asSeconds();
+    
+    spawnObjects<Asteroid>(asteroids, window, asteroid_texture, asteroid_clock, asteroids.back().asteroid_speed, score, deltaTime, asteroid_cooldown);
+    spawnObjects<Enemy>(enemies, window, enemy_texture, enemy_clock, enemies.back().enemy_speed, score, deltaTime, enemy_cooldown);
+    
+    player.moveObject(window);
+    player.update(deltaTime);
+    particle_logic.update(deltaTime);
+    
     // Check collision between player bullets and asteroids
     for (auto bulletIt = player.bullets.begin(); bulletIt != player.bullets.end();)
     {
@@ -227,9 +229,12 @@ void Game::update()
                 asteroidIt->hitPoints -= 20;
                 bulletIt = player.bullets.erase(bulletIt);
                 bulletRemoved = true;
+                particle_logic.addParticle(asteroidIt->getPosition(), 1.0f);
+                
                 if (asteroidIt->hitPoints <= 0)
                 {
                     score += 10;
+                    
                     asteroidIt = asteroids.erase(asteroidIt);
                 }
                 else
@@ -250,7 +255,7 @@ void Game::update()
     }
 
     // Check collision between player and asteroids
-    bool player_hit = false;
+    
     for (auto asteroidIt = asteroids.begin(); asteroidIt != asteroids.end();)
     {
         if (player.getGlobalBounds().intersects(asteroidIt->getGlobalBounds()))
@@ -264,6 +269,66 @@ void Game::update()
         }
     }
 
+    for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();)
+    {
+        for (auto enemy_bulletIt = enemyIt->enemy_bullets.begin(); enemy_bulletIt != enemyIt->enemy_bullets.end();)
+        {
+            if (enemy_bulletIt->getGlobalBounds().intersects(player.getGlobalBounds()))
+            {
+                player_hit = true;
+                enemy_bulletIt = enemyIt->enemy_bullets.erase(enemy_bulletIt);
+                break; 
+            }
+            else
+            {
+                enemy_bulletIt++;
+            }
+        }
+        
+        if (player_hit)
+        {
+            break; 
+        }
+        
+        enemyIt++;
+    }
+    
+    // Check collision between player bullets and enemies
+    for (auto bulletIt = player.bullets.begin(); bulletIt != player.bullets.end();)
+    {
+        bool bulletRemoved = false;
+        for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();)
+        {
+            if (bulletIt->getGlobalBounds().intersects(enemyIt->getGlobalBounds()))
+            {
+                enemyIt->hitPoints -= 20;
+                bulletIt = player.bullets.erase(bulletIt);
+                bulletRemoved = true;
+                particle_logic.addParticle(enemyIt->getPosition(), 1.0f);
+                
+                if (enemyIt->hitPoints <= 0)
+                {
+                    score += 20;
+                    
+                    enemyIt = enemies.erase(enemyIt);
+                }
+                else
+                {
+                    enemyIt++;
+                }
+                break;
+            }
+            else
+            {
+                enemyIt++;
+            }
+        }
+        if (!bulletRemoved)
+        {
+            bulletIt++;
+        }
+    }
+
     if (player_hit)
     {
         player.hitPoints -= 20;
@@ -272,23 +337,42 @@ void Game::update()
     if (player.hitPoints <= 0)
     {
         playGame = false;
-        //window.close();
     }
 }
 
 void Game::render()
 {
     menu.draw(window);
-    
     window.clear();
     window.draw(background1);
+    
+    if (player_hit)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            particle_logic.addParticle(player.getPosition(), 4.0f);
+        }
+        particle_logic.draw(window, player_particle_texture);
+        playGame = true;
+        player_hit = false;
+    }
+    
+    particle_logic.draw(window, asteroid_particle_texture);
     player.draw(window);
     player.shoot(window, bullet_texture); 
+    
     for (auto &asteroid : asteroids)
     {
         asteroid.draw(window);
     }
 
+    for (auto &enemy : enemies)
+    {
+        enemy.draw(window);
+        enemy.shoot(window, enemy_bullet_texture);
+    }
+    
+    
     score_display(window, score);
     hit_points_bar(window, player.hitPoints);
 

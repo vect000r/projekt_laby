@@ -14,10 +14,12 @@ public:
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
     void shoot(sf::RenderWindow& window, sf::Texture bullet_texture);
+    void setSpeed(float speed);
 };
 
 class Player : public MovableSprite
 {
+friend class Game;
 public:
     int hitPoints = 100;
     float bullet_position_x;
@@ -43,17 +45,19 @@ private:
 
 class Enemy : public MovableSprite
 {
+friend class Game;
 public:
     Enemy(sf::Vector2f position, sf::Vector2f size);
-
     void moveObject(sf::RenderWindow& window);
     void shoot(sf::RenderWindow& window, sf::Texture bullet_texture);
     void draw(sf::RenderWindow& window);
     void update(float deltaTime);
+    void setSpeed(float speed);
 
 private:
     sf::Vector2f enemy_velocity;
-    float enemy_speed = 400.0f;
+    float enemy_speed = 100.0f;
+    int hitPoints = 100;
     std::vector<sf::Sprite> enemy_bullets;
     sf::Clock bullet_clock;
     sf::Time bullet_cooldown;
@@ -61,20 +65,19 @@ private:
 
 class Asteroid : public MovableSprite
 {
+friend class Game;
 public:
-    float asteroid_speed = 200.0f;
-
     Asteroid(sf::Vector2f position, sf::Vector2f size);
-
     void moveObject(sf::RenderWindow& window);
     void draw(sf::RenderWindow& window);
     void update(float deltaTime);
-
+    void setSpeed(float speed);
     int hitPoints = 100;
     ~Asteroid() = default;
 
 private:
     sf::Vector2f asteroid_velocity = sf::Vector2f(0, 0);
+    float asteroid_speed = 200.0f;
 };
 
 #endif // CLASSES_H

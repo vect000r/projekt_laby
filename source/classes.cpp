@@ -100,14 +100,14 @@ Enemy::Enemy(sf::Vector2f position, sf::Vector2f size)
 
 void Enemy::moveObject(sf::RenderWindow& window)
 {
-    //pass
+    enemy_velocity.x = -enemy_speed;
 }
 
 void Enemy::shoot(sf::RenderWindow& window, sf::Texture bullet_texture)
 {
     bullet_cooldown = bullet_clock.getElapsedTime();
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)&& bullet_cooldown.asSeconds() >= 0.5)
+    if (bullet_cooldown.asSeconds() >= 0.5)
     {
         bullet_clock.restart();
         enemy_bullets.push_back(sf::Sprite(bullet_texture));
@@ -130,7 +130,12 @@ void Enemy::draw(sf::RenderWindow& window)
 
 void Enemy::update(float deltaTime)
 {
-    //move(velocity.x * deltaTime, velocity.y * deltaTime);
+    move(enemy_velocity.x * deltaTime, enemy_velocity.y * deltaTime);
+}
+
+void Enemy::setSpeed(float speed)
+{
+    enemy_speed = speed;
 }
 
 ////////////////////////
@@ -160,5 +165,11 @@ void Asteroid::update(float deltaTime)
     move(asteroid_velocity.x * deltaTime, asteroid_velocity.y * deltaTime);
 }
 
-int hitPoints = 100;
+void Asteroid::setSpeed(float speed)
+{
+    asteroid_speed = speed;
+}
+
+
+//int hitPoints = 100;
 

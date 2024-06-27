@@ -1,13 +1,13 @@
-GCC		  := g++
-FLAGS := -Wall -Wextra -w -Wno-unused-parameter -std=c++11 -ggdb
+GCC = g++
+FLAGS = -Wall -Wextra -w -Wno-unused-parameter -std=c++11 -ggdb
 
-BIN		:= bin
-SRC		:= source
-INCLUDE	:= includes
-LIB		:= lib
+BIN		= bin
+SRC		= source
+INCLUDE	= includes
+LIB		= lib
 
-LIBS	:= -lsfml-graphics -lsfml-window -lsfml-system
-EXECUTABLE	:= main
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+EXEC = main
 
 MKDIR_P = mkdir -p
 
@@ -20,8 +20,7 @@ directories: ${BIN}
 ${BIN}:
 	${MKDIR_P} ${BIN}
 
-run: clean all
-	
+run: 
 	./$(BIN)/$(EXECUTABLE)
 
 $(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
