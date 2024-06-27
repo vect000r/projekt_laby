@@ -9,19 +9,16 @@ void load_textures()
     if(!player_texture.loadFromFile("assets/player.png"))
     {
         std::cout << "Error loading player texture\n";
-        
     }
     
     if(!enemy_texture.loadFromFile("assets/enemy.png"))
     {
         std::cout << "Error loading enemy texture\n";
-        
     }
 
     if(!asteroid_texture.loadFromFile("assets/asteroid.png"))
     {
         std::cout << "Error loading asteroid texture\n";
-        
     }
 
     if(!bullet_texture.loadFromFile("assets/bullet.png"))
