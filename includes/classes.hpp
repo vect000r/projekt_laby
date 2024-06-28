@@ -10,11 +10,11 @@
 class MovableSprite : public sf::Sprite
 {
 public:
-    void moveObject(sf::RenderWindow& window);
-    void update(float deltaTime);
-    void draw(sf::RenderWindow& window);
-    void shoot(sf::RenderWindow& window, sf::Texture bullet_texture);
-    void setSpeed(float speed);
+    virtual void moveObject(sf::RenderWindow& window);
+    virtual void update(float deltaTime);
+    virtual void draw(sf::RenderWindow& window);
+    virtual void shoot(sf::RenderWindow& window, sf::Texture bullet_texture);
+    virtual void setSpeed(float speed);
 };
 
 class Player : public MovableSprite
@@ -36,6 +36,7 @@ public:
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
 
+    ~Player()=default;
 private:
     sf::Vector2f velocity = sf::Vector2f(0, 0);
     float speed = 400.0f;
@@ -53,7 +54,7 @@ public:
     void draw(sf::RenderWindow& window);
     void update(float deltaTime);
     void setSpeed(float speed);
-
+    ~Enemy() = default;
 private:
     sf::Vector2f enemy_velocity;
     float enemy_speed = 100.0f;
